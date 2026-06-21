@@ -1,0 +1,125 @@
+:root {
+  --ink: #11162b;
+  --ink-raised: #161c36;
+  --parchment: #f2ecdd;
+  --parchment-line: #ddd3b8;
+  --seal: #b23a2e;
+  --brass: #c9a227;
+  --slate: #8b93ae;
+  --charcoal: #1c1b17;
+
+  --font-display: "Fraunces", "Iowan Old Style", serif;
+  --font-body: "Inter", -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", monospace;
+
+  --radius: 3px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--parchment);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 48px 24px 96px;
+}
+
+a {
+  color: var(--brass);
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 2px;
+}
+
+input,
+textarea {
+  font-family: var(--font-body);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--slate);
+}
+
+.card {
+  background-color: var(--parchment);
+  background-image:
+    radial-gradient(130% 90% at 8% -10%, rgba(255, 255, 255, 0.4), transparent 55%),
+    repeating-linear-gradient(
+      115deg,
+      rgba(28, 27, 23, 0.022) 0px,
+      rgba(28, 27, 23, 0.022) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  color: var(--charcoal);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.6);
+}
+
+.hairline {
+  border: none;
+  border-top: 1px solid var(--parchment-line);
+  margin: 20px 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+@keyframes stamp-in {
+  0% {
+    opacity: 0;
+    transform: scale(2.2) rotate(-18deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.92) rotate(-7deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(-7deg);
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
