@@ -3,7 +3,7 @@ import { createClient } from "genlayer-js";
 import { testnetBradbury } from "genlayer-js/chains";
 import { TransactionStatus } from "genlayer-js/types";
 
-const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS as `0x${string}`;
+const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS as any;
 
 export type CaseRecord = {
   case_id: string;
@@ -37,7 +37,7 @@ export async function connectWallet(): Promise<string> {
     throw new Error("No wallet found. Install MetaMask or Rabby to file a case.");
   }
   const accounts: string[] = await eth.request({ method: "eth_requestAccounts" });
-  const addr = accounts[0] as `0x${string}`;
+  const addr = accounts[0] as any;
 
   client = createClient({ chain: testnetBradbury, account: addr });
   try {
@@ -71,7 +71,7 @@ async function waitForReceiptWithRetries(hash: `0x${string}`, maxTotalMs = 600_0
   let lastErr: unknown = null;
   while (Date.now() - start < maxTotalMs) {
     try {
-      return await c.waitForTransactionReceipt({ hash, status: TransactionStatus.ACCEPTED });
+      return await c.waitForTransactionReceipt({ hash: hash as any, status: TransactionStatus.ACCEPTED });
     } catch (err) {
       if (isSnapsNoise(err)) continue;
       const msg = String((err as any)?.message ?? "").toLowerCase();
