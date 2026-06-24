@@ -1,50 +1,136 @@
-# Ghaza Court
+# ⚖️ Ghaza Court
 
-A public, permanent, AI-adjudicated dispute resolution dApp running on [GenLayer](https://genlayer.com)'s Bradbury Testnet.
+**AI-adjudicated dispute resolution on GenLayer Bradbury Testnet. Two parties. One AI judge. Permanent public ruling.**
 
-File a dispute with both sides' arguments. An AI judge, running as a leader/validator consensus across real Bradbury validators (not a single centralized model call), pulls light web context and rules — and the ruling is written to the chain permanently. No appeals, no edits, no takedowns. Every case ever filed is publicly browsable in the docket.
+🌐 **Live:** [ghaza-court.vercel.app](https://ghaza-court.vercel.app)
 
-## How it works
+---
 
-- **One write function, `file_case`.** Whoever files submits both sides' arguments in a single transaction — title, plaintiff address + argument, defendant address + argument.
-- **The ruling is non-deterministic-safe.** GenLayer's validators each independently run the same judging prompt (web search + LLM call) and only need to agree on the structured `verdict` field — not on the exact wording of the reasoning, which legitimately varies between validators. This is what makes AI-generated rulings actually reach consensus on a blockchain.
-- **Everything is permanent.** Once a case is ruled, there's no function to edit or delete it. The contract has no admin key.
-- **Reads are free.** Browsing the docket costs no gas — only filing a new case does.
+## What Is Ghaza Court?
 
-## Stack
+Ghaza Court lets any two parties bring a dispute before an AI judge. Both sides submit their arguments. Multiple independent AI validators read both arguments and search for relevant web context, then reach consensus on a ruling — which is sealed permanently on Bradbury chain.
 
-- **Contract:** Python, GenLayer Intelligent Contracts (`gl.vm.run_nondet_unsafe` for the consensus pattern), deployed to GenLayer Bradbury Testnet.
-- **Frontend:** Vue 3 + TypeScript + Vite, talking to the contract via `genlayer-js`.
+The ruling is public. The ruling is permanent. Nobody can appeal it, edit it, or delete it.
 
-## Project structure
+---
+
+## Screenshots
+
+![File a Case](screenshots/file-case.png)
+*Submit both sides of a dispute — case title, plaintiff argument, defendant argument*
+
+![The Docket](screenshots/docket.png)
+*The public docket showing 7 filed cases — from "the sky is blue" to "Messi vs Ronaldo"*
+
+---
+
+## How It Works
 
 ```
-internet-court/
-├── internet_court.py     # the contract
-├── ARCHITECTURE.md        # full system design doc
-└── app/                    # the frontend (this is what gets deployed)
-    ├── src/
-    │   ├── pages/          # FilePage, DocketPage
-    │   ├── components/     # FileCaseForm, CaseDocket, CaseCard, VerdictStamp
-    │   ├── lib/client.ts   # the only file that talks to genlayer-js
-    │   └── router/
-    └── package.json
+Plaintiff + Defendant each submit their argument
+        ↓
+Each validator independently fetches Google News RSS for context
+        ↓
+Each validator analyzes both arguments and reaches a verdict
+        ↓
+prompt_non_comparative reaches consensus on Bradbury (~3-5 min)
+        ↓
+Ruling sealed permanently on-chain with full reasoning
 ```
 
-## Running locally
+---
+
+## Ruling Structure
+
+Every case produces a four-field ruling:
+
+| Field | Values |
+|---|---|
+| `verdict` | `plaintiff` / `defendant` / `split` |
+| `confidence` | `high` / `medium` / `low` |
+| `reasoning` | Full AI reasoning explaining the ruling |
+| `ruling_summary` | One-sentence plain-language verdict |
+
+---
+
+## Features
+
+- **Two-sided submission** — plaintiff and defendant each make their case
+- **Web-augmented judgment** — validators fetch real-world context before ruling
+- **Public docket** — all rulings browseable by case number
+- **Permanent record** — rulings cannot be edited or deleted after consensus
+- **Courtroom UI** — serif typography and parchment tones that match the gravity of a public ruling
+
+---
+
+## Live Cases on the Docket
+
+The docket currently has 7 public rulings including:
+
+- *"MESSI HAS WON MORE CHAMPIONS LEAGUE TROPHIES THAN RONALDO"*
+- *"Tinubu is the president of Nigeria"*
+- *"France won the world cup in 2018"*
+- *"the sky is blue"*
+
+All verifiable on-chain.
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Smart contract | Python Intelligent Contract (GenLayer) |
+| Equivalence principle | `prompt_non_comparative` |
+| Web context | Google News RSS |
+| Frontend | Vue 3 + TypeScript |
+| Blockchain SDK | genlayer-js v1.1.8 |
+| Network | GenLayer Bradbury Testnet (Chain ID: 4221) |
+
+---
+
+## Contract Details
+
+- **Address:** `0x2d69396950a863376388B4EF9Bede9D3Ad3411a9`
+- **Network:** GenLayer Bradbury Testnet
+- **Explorer:** [View on GenExplorer](https://explorer-bradbury.genlayer.com/address/0x2d69396950a863376388B4EF9Bede9D3Ad3411a9)
+
+---
+
+## Key Technical Decisions
+
+**Sequential reads instead of `Promise.all`**
+Early versions used `Promise.all` to fetch multiple contract reads simultaneously. On Bradbury's RPC, this caused rate limit errors. Replacing with sequential `for` loops resolved all RPC errors cleanly.
+
+**`prompt_non_comparative` on the verdict field only**
+The contract validates only the structured `verdict` field — not the free-text `reasoning`. This keeps consensus tractable: validators agree on the outcome (plaintiff/defendant/split), not the exact wording of the reasoning.
+
+**Google News RSS for factual grounding**
+For factual disputes, LLM training data has a cutoff. Google News RSS fetches current, verifiable information that grounds the ruling in real-world facts rather than potentially outdated training data.
+
+---
+
+## Local Development
 
 ```bash
-cd app
+git clone https://github.com/terencetttt/Ghaza-Court.git
+cd Ghaza-Court/app
 npm install
-cp .env.example .env
-# edit .env, set VITE_CONTRACT_ADDRESS to the deployed contract address
+```
+
+Create `.env`:
+```
+VITE_CONTRACT_ADDRESS=0x2d69396950a863376388B4EF9Bede9D3Ad3411a9
+```
+
+```bash
 npm run dev
 ```
 
-## Deployment
+---
 
-The contract is deployed by hand through [GenLayer Studio](https://studio.genlayer.com) (network set to **Genlayer Bradbury Testnet**). The frontend deploys to Vercel from this repo — see the deployment notes for the exact steps, since Vercel's Root Directory needs to point at `app/`, not the repo root.
+## Built By
 
-## What this isn't
+[@terencetttt](https://github.com/terencetttt) — building on GenLayer Bradbury as part of the GenLayer Developer Program.
 
-This is a demo of AI-adjudicated consensus on a blockchain, not a legal system. Nothing ruled here carries any binding legal authority — it's "court" in the sense of a public, permanent record of an argument and a verdict, not a substitute for an actual court.
+Part of a series: [GenZa](https://github.com/terencetttt/GenZa) · **Ghaza Court** · [ChainSolve](https://github.com/terencetttt/ChainSolve)
